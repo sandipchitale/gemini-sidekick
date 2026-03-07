@@ -1,7 +1,5 @@
 import * as ChromeLauncher from 'chrome-launcher';
-import { appendFileSync } from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
+import os, { tmpdir } from 'node:os';
 import { connect, Browser, Page, Target, ElementHandle } from 'puppeteer-core';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -12,7 +10,7 @@ async function launchChrome() {
     let chrome = await ChromeLauncher.launch({
       port: REMOTE_PORT,
       startingUrl: 'about:blank',
-      userDataDir: '/tmp/gemini-sidekick-user-data-dir',
+      userDataDir: `${tmpdir()}/gemini-sidekick-user-data-dir`,
       chromeFlags: [
         '--new-window',
         '--disable-blink-features=AutomationControlled',
@@ -220,6 +218,5 @@ await (async () => {
         console.error('Error executing hook:', error);
         process.exit(1);
     }
-    await appendFileSync("/tmp/gemini-sidekick", 'Returning from hook.' + hookName + '\n');
     process.exit(0);
 })();
