@@ -1,0 +1,22 @@
+{
+  "name": "gemini-sidekick",
+  "version": "1.0.0",
+  "description": "A browser running Google Gemini as a sidekick to Gemini CLI",
+  "main": "gemini-sidekick.ts",
+  "scripts": {
+    "start": "node --experimental-strip-types gemini-sidekick.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "chrome-launcher": "^1.2.1",
+    "puppeteer-core": "^24.38.0"
+  }
+}

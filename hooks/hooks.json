@@ -1,0 +1,52 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "start-gemini-sidekick",
+            "type": "command",
+            "command": "node ${extensionPath}/gemini-sidekick.ts"
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "send-prompt-to-gemini-sidekick",
+            "type": "command",
+            "command": "node ${extensionPath}/gemini-sidekick.ts"
+          }
+        ]
+      }
+    ],
+    "AfterAgent": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "send-response-to-gemini-sidekick",
+            "type": "command",
+            "command": "node ${extensionPath}/gemini-sidekick.ts"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "close-gemini-sidekick",
+            "type": "command",
+            "command": "node ${extensionPath}/gemini-sidekick.ts"
+          }
+        ]
+      }
+    ]
+  }
+}
