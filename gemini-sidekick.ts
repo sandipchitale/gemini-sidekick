@@ -1,5 +1,7 @@
 import * as ChromeLauncher from 'chrome-launcher';
 import os, { tmpdir } from 'node:os';
+import path from 'node:path';
+import { mkdirSync } from 'node:fs';
 import { connect, Browser, Page, Target, ElementHandle } from 'puppeteer-core';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -7,10 +9,15 @@ const REMOTE_PORT: number = 19222;
 
 async function launchChrome() {
     // 1. Launch Chrome using chrome-launcher
+    const userDataDir = path.join(tmpdir(), 'gemini-sidekick-user-data-dir');
+
+    // Ensure the directory exists, otherwise chrome-launcher fails to open log files
+    mkdirSync(userDataDir, { recursive: true });
+
     let chrome = await ChromeLauncher.launch({
       port: REMOTE_PORT,
       startingUrl: 'about:blank',
-      userDataDir: `${tmpdir()}/gemini-sidekick-user-data-dir`,
+      userDataDir,
       chromeFlags: [
         '--new-window',
         '--disable-blink-features=AutomationControlled',
@@ -19,7 +26,7 @@ async function launchChrome() {
     });
 }
 
-async function sesssionStart(sessionId: string) {
+async function sessionStart(sessionId: string) {
     await launchChrome();
     const REMOTE_DEBUGGING_URL = `http://127.0.0.1:${REMOTE_PORT}`;
 
@@ -157,7 +164,7 @@ await (async () => {
                 {
                     await safeExecute(async () => {
                         const sessionId: string = json.session_id;
-                        await sesssionStart(sessionId);
+                        await sessionStart(sessionId);
                     });
                 }
                 break;
