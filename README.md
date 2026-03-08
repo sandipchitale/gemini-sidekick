@@ -67,6 +67,8 @@ Plan: Gemini Code Assist in Google One AI Pro
 ## Prerequisite
 
 ```bash
+git clone https://github.com/sandipchitale/gemini-sidekick.git
+cd gemini-sidekick
 npm install
 ```
 
@@ -74,17 +76,28 @@ npm install
 
 ## Installation
 
-1. Link the extension to your Gemini environment:
-   ```bash
-   gemini extension link .
-   ```
+```bash
+cd  /path/to/gemini-sidekick
+gemini extension link .
+```
+
+## Disable the extension
+
+```bash
+gemini extension disable gemini-sidekick
+```
+
+## Enable the extension
+
+```bash
+gemini extension enable gemini-sidekick
+```
 
 ## Uninstallation
 
-1. Link the extension to your Gemini environment:
-   ```bash
-   gemini extension uninstall gemini-sidekick
-   ```
+```bash
+gemini extension uninstall gemini-sidekick
+```
 
 ## Workflow
 
