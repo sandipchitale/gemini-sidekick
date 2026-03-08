@@ -177,7 +177,7 @@ await (async () => {
                             if (page) {
                                 const promptBox = await page.$('rich-textarea');
                                 if (promptBox) {
-                                    await promptBox.type(`MANDATORY: Use canvas tool to process this prompt: ${prompt}`);
+                                    await typeMultilineTextInPromptBox(page, promptBox, `MANDATORY: Use canvas tool to process this prompt: ${prompt}`);
                                     await delay(1000);
                                     await page.keyboard.up('Enter');
                                     await page.keyboard.press('Enter');
