@@ -177,7 +177,7 @@ await (async () => {
                             if (page) {
                                 const promptBox = await page.$('rich-textarea');
                                 if (promptBox) {
-                                    await promptBox.type(`MANDATORY: Use canvas tool to render this prompt: ${prompt}`);
+                                    await promptBox.type(`MANDATORY: Use canvas tool to process this prompt: ${prompt}`);
                                     await delay(1000);
                                     await page.keyboard.up('Enter');
                                     await page.keyboard.press('Enter');
@@ -196,7 +196,7 @@ await (async () => {
                     await safeExecute(async () => {
                         const prompt: string = json.prompt;
                         if (prompt && prompt.includes('#sidekick')) {
-                            const prompt_response = `MANDATORY: Render the following using Canvas tool as is:\n${json.prompt_response}`;
+                            const prompt_response = `MANDATORY: Visualize/animate/render the following using Canvas tool as is:\n${json.prompt_response}`;
                             const sessionId: string = json.session_id;
                             const page = await findPageForSession(sessionId);
                             if (page) {
