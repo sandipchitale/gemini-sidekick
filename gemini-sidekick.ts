@@ -36,6 +36,10 @@ async function sessionStart(sessionId: string) {
       defaultViewport: null // Matches the browser's current window size
     });
 
+    await delay(1000);
+
+    const pages = (await browser.pages());    
+
     // create page for session
     const page: Page = await browser.newPage();
 
@@ -43,16 +47,18 @@ async function sessionStart(sessionId: string) {
     await page.goto('https://gemini.google.com', { waitUntil: 'networkidle2' });
     await delay(1000);
 
-    // // Set the document.title property
-    // await page.evaluate((sessionId: string) => {
-    //   document.title = sessionId;
-    // }, sessionId);
-
+    // close about:blank page if it exists
+    for (const aPage of pages) {
+        if (aPage.url() === 'about:blank') {
+            await aPage.close({runBeforeUnload: false});
+            break;
+        }
+    }
+   
     // Set the window.name property
     await page.evaluate((sessionId) => {
       window.name = sessionId;
     }, sessionId);
-
 
     // add code to enable the canvas tool
     try {
