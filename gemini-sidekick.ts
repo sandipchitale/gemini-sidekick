@@ -1,11 +1,25 @@
 import * as ChromeLauncher from 'chrome-launcher';
 import os, { tmpdir } from 'node:os';
 import path from 'node:path';
+import net from 'node:net';
 import { mkdirSync } from 'node:fs';
 import { connect, Browser, Page, Target, ElementHandle } from 'puppeteer-core';
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const REMOTE_PORT: number = 19222;
+const REMOTE_DEBUGGING_URL = `http://127.0.0.1:${REMOTE_PORT}`;
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const server = net.createServer();
+    server.once('error', () => resolve(false));
+    server.once('listening', () => {
+      server.close(() => resolve(true));
+    });
+    server.listen(port, '127.0.0.1');
+  });
+}
 
 async function launchChrome() {
     // 1. Launch Chrome using chrome-launcher
@@ -26,9 +40,17 @@ async function launchChrome() {
     });
 }
 
-async function sessionStart(sessionId: string) {
-    await launchChrome();
-    const REMOTE_DEBUGGING_URL = `http://127.0.0.1:${REMOTE_PORT}`;
+async function ensureSession(sessionId: string) {
+    // if port is available, launch chrome
+    if (await isPortAvailable(REMOTE_PORT)) {
+        await launchChrome();
+        await delay(1000);
+    }
+
+    const existingPage = await findPageForSession(sessionId);
+    if (existingPage) {
+        return;
+    }
 
     // Connect to the existing instance
     const browser: Browser = await connect({
@@ -78,8 +100,6 @@ async function sessionStart(sessionId: string) {
 }
 
 async function findPageForSession(sessionId: string): Promise<Page | undefined> {
-    const REMOTE_DEBUGGING_URL = `http://127.0.0.1:${REMOTE_PORT}`;
-
     // Connect to the existing instance
     const browser: Browser = await connect({
       browserURL: REMOTE_DEBUGGING_URL,
@@ -167,18 +187,14 @@ await (async () => {
     try {
         switch (hookName) {
             case 'SessionStart':
-                {
-                    await safeExecute(async () => {
-                        const sessionId: string = json.session_id;
-                        await sessionStart(sessionId);
-                    });
-                }
                 break;
             case 'BeforeAgent':
                 await safeExecute(async () => {
                         const prompt: string = json.prompt;
                         if (prompt && prompt.includes('#prompt-sidekick')) {
                             const sessionId: string = json.session_id;
+                            // Ensure a tab dedicated to this session
+                            await ensureSession(sessionId);
                             const page = await findPageForSession(sessionId);
                             if (page) {
                                 const promptBox = await page.$('rich-textarea');
@@ -204,6 +220,8 @@ await (async () => {
                         if (prompt && prompt.includes('#sidekick')) {
                             const prompt_response = `MANDATORY: Visualize/animate/render the following using Canvas tool as is:\n${json.prompt_response}`;
                             const sessionId: string = json.session_id;
+                            // Ensure a tab dedicated to this session
+                            await ensureSession(sessionId);
                             const page = await findPageForSession(sessionId);
                             if (page) {
                                 const promptBox = await page.$('rich-textarea');
